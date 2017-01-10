@@ -33,39 +33,11 @@ function FilterImage(idx){
     var context     = canvas.getContext('2d');
     var imageData   = context.createImageData(canvas.width, canvas.height);
     var copyData    = [].concat(orgPixelData)[0];
-    EditMode[idx].function(copyData, imageData.data);
+    var option      = {"width": canvas.width, "height":canvas.height};
+    EditMode[idx].function(copyData, imageData.data, option);
     context.putImageData(imageData,0,0);
     $("#main_img").prop("src", canvas.toDataURL());
 }
-
-function Normal(_i_d, _o_d){
-    for (var i = 0; i < _i_d.length; i+=4) {
-        _o_d[i]   = _i_d[i]  
-        _o_d[i+1] = _i_d[i+1]
-        _o_d[i+2] = _i_d[i+2]
-        _o_d[i+3] = _i_d[i+3]
-    }
-}
-
-function GrayScale(_i_d, _o_d){
-    for (var i = 0; i < _i_d.length; i+=4) {
-        var g = _i_d[i] * 0.2126 + _i_d[i+1] * 0.7152 + _i_d[i+2] * 0.0722;
-        _o_d[i] = _o_d[i+1] = _o_d[i+2] = g;
-        _o_d[i+3] = 255;
-    }
-} 
-
-function Binalize(_i_d, _o_d){
-    for (var i = 0; i < _i_d.length; i+=4) {
-        var g = _i_d[i] * 0.2126 + _i_d[i+1] * 0.7152 +_i_d[i+2] * 0.0722;
-        if(g < 255/2){
-            _o_d[i] = _o_d[i+1] = _o_d[i+2] = 0;
-        }else{
-            _o_d[i] = _o_d[i+1] = _o_d[i+2] = 255;
-        }
-        _o_d[i+3] = 255;
-    }
-} 
 
 function SetThumbnail(){
     var canvas      = document.getElementById("thumbnail_canvas");
@@ -80,10 +52,11 @@ function SetThumbnail(){
     var imageData   = context.getImageData(0,0,dstSize.width,dstSize.height);
     var orgd        = [].concat(imageData.data)[0];
     var htmlStr     = ""
+    var option = {"width": canvas.width, "height":canvas.height};
 
     for(var i=0; i<EditMode.length; ++i){
         imageData.data = orgd;
-        EditMode[i].function(orgd, imageData.data);
+        EditMode[i].function(orgd, imageData.data, option);
         context.putImageData(imageData,0,0);
         htmlStr += '<div class="thumbnail-wrap">' + 
                    '<img src="' + canvas.toDataURL() + '" onClick="ModeClick(' + i + ')"></img>' + 

@@ -2,7 +2,8 @@
 var EditMode = [
     {"name": "Normal", "function": Normal},
     {"name": "GrayScale", "function": GrayScale},
-    {"name": "Binalize", "function": Binalize}
+    {"name": "Binalize", "function": Binalize},
+    {"name": "Fish eye", "function": FishEye}
 ];
 
 $(function(){
