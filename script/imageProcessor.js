@@ -32,41 +32,54 @@ function Binalize(_i_d, _o_d, _option){
 
 //fish eye
 function FishEye(_i_d, _o_d, _option){
-    var _width     = _option.width;
-    var _height    = _option.height;
-    var defaultFOV = 50;
-    var fishFOV    = 45;
-    var r          = _height / 2 * Math.tan(defaultFOV * (Math.PI/180));
-    var D          = 2 / r;
-    // var targetArea = (_width < _height) ? _width / 2 : _height / 2;
-    // var cW = _width / 2;
-    // var cH = _height / 2;
-    
+    var _width  = _option.width;
+    var _height = _option.height;
+
+    var r = Math.min(_width, _height) / 2;
+
+    function ConvertWHtoXYZ(wh){ 
+        return { 
+            x: wh.w - Math.floor(_width / 2), 
+            y: wh.h - Math.floor(_height / 2), 
+            z: r 
+        };
+    }
+    function ConvertXYZtoWH(xyz){ 
+        return { 
+            w: xyz.x + Math.floor(_width / 2), 
+            h: xyz.y + Math.floor(_height / 2)
+        };
+    }
+    function ConvertWHtoIndex(wh){
+        return (wh.h * _width + wh.w) * 4;
+    }
+    function ConvertIndextoWH(i){ 
+        return {
+            w: (i / 4) % _width,
+            h: Math.floor((i / 4) / _width)
+        };
+    }
+    function f(xyz){
+        var length = Math.sqrt(xyz.x*xyz.x + xyz.y*xyz.y + xyz.z*xyz.z);
+        return {
+            x: xyz.x * (r/length),
+            y: xyz.y * (r/length),
+            z: xyz.z * (r/length)
+        };
+    }
+
+    for (var i = 0; i < _i_d.length; i+=4) {
+        _o_d[i]   = 0; 
+        _o_d[i+1] = 0;
+        _o_d[i+2] = 0; 
+        _o_d[i+3] = 255;
+    }
     for (var i = 0; i < _i_d.length; i+=4) {
         // default initialize with black pixel
-        _o_d[i] = _o_d[i+1] = _o_d[i+2] = 0; 
-        _o_d[i+3] = 255;
-        var i_w = (i / 4) % _width;
-        var i_h = ((i / 4) - i_w) / _width;
-        var r_w   = i_w / (2 * Math.tan(defaultFOV * (Math.PI/180)));
-        var r_h   = i_h / (2 * Math.tan(defaultFOV * (Math.PI/180)));
-        var o_w = Math.floor(r_w*(i_w-_width/2)/Math.sqrt(D*D+(i_w-_width/2)*(i_w-_width/2)+(i_h-_height/2)*(i_h-_height/2)) + _width/2);
-        var o_h = Math.floor(r_h*(i_h-_height/2)/Math.sqrt(D*D+(i_w-_width/2)*(i_w-_width/2)+(i_h-_height/2)*(i_h-_height/2)) + _height/2);
-        var o_i = (o_h * _width + o_w) * 4; 
-
-        if (o_w >= 0 && o_w < _width && o_h >= 0 && o_h < _height) {
-            _o_d[o_i] = _i_d[i];
-            _o_d[o_i + 1] = _i_d[i + 1];
-            _o_d[o_i + 2] = _i_d[i + 2];
-        } else {
-            _o_d[o_i] = _o_d[o_i + 1] = _o_d[o_i + 2] = 0;
-        }
-        // //do process to target pixel. 
-        // if((cW - targetArea <= w) && (w < cW + targetArea) &&
-        //    (cH - targetArea <= h) && (h < cH + targetArea)){
-               
-
-        // }
-
+        var o_i = ConvertWHtoIndex(ConvertXYZtoWH(f(ConvertWHtoXYZ(ConvertIndextoWH(i)))));
+        
+        _o_d[o_i]     = _i_d[i];
+        _o_d[o_i + 1] = _i_d[i + 1];
+        _o_d[o_i + 2] = _i_d[i + 2];
     }
 }

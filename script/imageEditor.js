@@ -32,7 +32,7 @@ function FilterImage(idx){
     var canvas      = document.getElementById("image_canvas");
     var context     = canvas.getContext('2d');
     var imageData   = context.createImageData(canvas.width, canvas.height);
-    var copyData    = [].concat(orgPixelData)[0];
+    var copyData    = [].concat([{"copy":orgPixelData}])[0].copy;
     var option      = {"width": canvas.width, "height":canvas.height};
     EditMode[idx].function(copyData, imageData.data, option);
     context.putImageData(imageData,0,0);
@@ -40,23 +40,21 @@ function FilterImage(idx){
 }
 
 function SetThumbnail(){
-    var canvas      = document.getElementById("thumbnail_canvas");
-    var context     = canvas.getContext('2d');
-    var orgWidth    = img.width;
-    var orgHeight   = img.height;
-
-    var dstSize = GetDstSize(orgWidth, orgHeight);
-    canvas.width    = dstSize.width;
-    canvas.height   = dstSize.height;
-    context.drawImage(img,0,0,orgWidth,orgHeight,0,0,dstSize.width,dstSize.height);
-    var imageData   = context.getImageData(0,0,dstSize.width,dstSize.height);
-    var orgd        = [].concat(imageData.data)[0];
-    var htmlStr     = ""
+    var canvas       = document.getElementById("thumbnail_canvas");
+    var context      = canvas.getContext('2d');
+    var dstSize      = GetDstSize(img.width, img.height);
+    canvas.width     = dstSize.width;
+    canvas.height    = dstSize.height;
+    context.drawImage(img,0,0,img.width,img.height,0,0,dstSize.width,dstSize.height);
+    var orgImageData = context.getImageData(0,0,dstSize.width,dstSize.height);
+    var copyData     = [].concat([{"copy":orgImageData.data}])[0].copy;
+    var imageData    = context.createImageData(dstSize.width,dstSize.height);
+    var htmlStr      = "";
     var option = {"width": canvas.width, "height":canvas.height};
 
     for(var i=0; i<EditMode.length; ++i){
-        imageData.data = orgd;
-        EditMode[i].function(orgd, imageData.data, option);
+        //imageData.data = orgd;
+        EditMode[i].function(copyData, imageData.data, option);
         context.putImageData(imageData,0,0);
         htmlStr += '<div class="thumbnail-wrap">' + 
                    '<img src="' + canvas.toDataURL() + '" onClick="ModeClick(' + i + ')"></img>' + 
