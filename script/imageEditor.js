@@ -18,6 +18,7 @@ function SetImageToCanvas(_file){
             canvas.height   = fullSize.height;
             context.drawImage(img, 0, 0, fullSize.width, fullSize.height);
             var imageData   = context.getImageData(0, 0, fullSize.width, fullSize.height);
+            orgPixelData    = null;
             orgPixelData    = imageData.data;
             $("#main_img").prop("src", canvas.toDataURL());
 
@@ -45,10 +46,10 @@ function SetThumbnail(){
     var dstSize      = GetDstSize(img.width, img.height);
     canvas.width     = dstSize.width;
     canvas.height    = dstSize.height;
-    context.drawImage(img,0,0,img.width,img.height,0,0,dstSize.width,dstSize.height);
-    var orgImageData = context.getImageData(0,0,dstSize.width,dstSize.height);
+    context.drawImage(img,0,0,img.width,img.height,0,0,canvas.width,canvas.height);
+    var orgImageData = context.getImageData(0,0,canvas.width,canvas.height);
     var copyData     = [].concat([{"copy":orgImageData.data}])[0].copy;
-    var imageData    = context.createImageData(dstSize.width,dstSize.height);
+    var imageData    = context.createImageData(canvas.width,canvas.height);
     var htmlStr      = "";
     var option = {"width": canvas.width, "height":canvas.height};
 

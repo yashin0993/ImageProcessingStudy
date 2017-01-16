@@ -39,15 +39,15 @@ function FishEye(_i_d, _o_d, _option){
 
     function ConvertWHtoXYZ(wh){ 
         return { 
-            x: wh.w - Math.floor(_width / 2), 
-            y: wh.h - Math.floor(_height / 2), 
+            x: wh.w - (_width / 2), 
+            y: wh.h - (_height / 2), 
             z: r 
         };
     }
     function ConvertXYZtoWH(xyz){ 
         return { 
-            w: xyz.x + Math.floor(_width / 2), 
-            h: xyz.y + Math.floor(_height / 2)
+            w: Math.floor(xyz.x + (_width / 2)), 
+            h: Math.floor(xyz.y + (_height / 2))
         };
     }
     function ConvertWHtoIndex(wh){
@@ -69,9 +69,7 @@ function FishEye(_i_d, _o_d, _option){
     }
 
     for (var i = 0; i < _i_d.length; i+=4) {
-        _o_d[i]   = 0; 
-        _o_d[i+1] = 0;
-        _o_d[i+2] = 0; 
+        _o_d[i] = _o_d[i+1] = _o_d[i+2] = 0;
         _o_d[i+3] = 255;
     }
     for (var i = 0; i < _i_d.length; i+=4) {
@@ -81,5 +79,6 @@ function FishEye(_i_d, _o_d, _option){
         _o_d[o_i]     = _i_d[i];
         _o_d[o_i + 1] = _i_d[i + 1];
         _o_d[o_i + 2] = _i_d[i + 2];
+        _o_d[o_i + 3] = _i_d[i + 3];
     }
 }
